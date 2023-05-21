@@ -439,7 +439,7 @@
 }
 
 .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap:hover .aplayer-volume-bar-wrap {
-  height: 40px
+  height: 5.5rem
 }
 
 .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap {
@@ -454,7 +454,7 @@
 }
 
 .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap.aplayer-volume-bar-wrap-active {
-  height: 40px
+  height: 5.5rem
 }
 
 .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar {
@@ -462,7 +462,7 @@
   bottom: 0;
   right: 10px;
   width: 5px;
-  height: 35px;
+  height: 5rem;
   background: var(--heo-white-op);
   border-radius: 2.5px;
   overflow: hidden
