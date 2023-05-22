@@ -20,7 +20,7 @@ var heo = {
         
         // 转发获取图片资源，解决跨域问题
         const imgUrl = img.src;  // 图片 URL
-        const proxyUrl = "http://img-proxy.guole.fun/image-proxy?url=";  // 代理服务器的 URL
+        const proxyUrl = "https://img-proxy.guole.fun/image-proxy?url=";  // 代理服务器的 URL
 
         getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
           .then((color) => {
