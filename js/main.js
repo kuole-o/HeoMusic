@@ -18,6 +18,12 @@ var heo = {
       img.onload = function() {
         heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
       };
+
+      // 设置背景
+      var coverColor = colorfulImg(img.src);
+      let body = document.body;
+      body.style.background = coverColor;
+
     } else {
       // 第一次进入，绑定事件，改背景
       let timer = setInterval(()=>{
@@ -76,6 +82,34 @@ function extractValue(input) {
   var valueRegex = /\("([^\s]+)"\)/g;
   var match = valueRegex.exec(input);
   return match[1];
+}
+
+//歌曲封面获取主题色
+function colorfulImg(img){
+  let canvas = document.createElement('canvas'),
+      context = canvas.getContext && canvas.getContext('2d'),
+      height,width,length,data, 
+      i = -4,
+      blockSize = 5,
+      count = 0,
+      rgb = {r:0,g:0,b:0}
+          
+  height = canvas.height = imgEl.height
+  width = canvas.width = imgEl.width
+  context.drawImage(imgEl, 0, 0);
+  data = context.getImageData(0, 0, width, height).data
+  length = data.length
+  while ( (i += blockSize * 4) < length ) {
+  ++count;
+  rgb.r += data[i];
+  rgb.g += data[i+1];
+  rgb.b += data[i+2];
+  }
+  rgb.r = ~~(rgb.r/count);
+  rgb.g = ~~(rgb.g/count);
+  rgb.b = ~~(rgb.b/count);
+  var color = 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+  return color;
 }
 
 //空格控制音乐
