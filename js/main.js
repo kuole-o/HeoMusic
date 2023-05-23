@@ -24,7 +24,7 @@ var heo = {
 
         getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
           .then((color) => {
-            console.log("当前提取的主题色为:", color);
+            console.log("当前提取的歌曲封面主题色为:", color);
             heo.setBodyBackgroundColor(color);
           })
           .catch((error) => {
@@ -53,7 +53,7 @@ var heo = {
     });
   },
   setBodyBackgroundColor: function (color) {
-    console.log('本次提取到的歌曲封面主题色为：' + color);
+    console.log('即将进行设置的歌曲封面提取色为：' + color);
     let body = document.body;
     body.style.background = color;
   },
