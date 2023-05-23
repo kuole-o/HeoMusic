@@ -15,16 +15,19 @@ var heo = {
       const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
       const img = new Image();
       img.src = extractValue(musiccover.style.backgroundImage);
+      img.crossOrigin = "anonymous";
       img.onload = function() {
         heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
         
         // 转发获取图片资源，解决跨域问题
         const imgUrl = img.src;  // 图片 URL
-        const proxyUrl = "https://api.guole.fun/image-proxy?url=";  // 代理服务器的 URL
 
-        getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
+        // const proxyUrl = "https://api.guole.fun/image-proxy?url=";  // 代理服务器的 URL
+        // getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
+        
+        getDominantColor(imgUrl)
           .then((color) => {
-            console.log("当前提取的歌曲封面主题色为:", color);
+            console.log("当前提取到的歌曲封面主题色为:", color);
             heo.setBodyBackgroundColor(color);
           })
           .catch((error) => {
@@ -53,9 +56,12 @@ var heo = {
     });
   },
   setBodyBackgroundColor: function (color) {
-    console.log('即将进行设置的歌曲封面提取色为：' + color);
     let body = document.body;
     body.style.background = color;
+    // 设置 iOS 状态栏颜色
+    console.log('设置状态栏颜色：' + color)
+    let statusBarMeta = document.querySelector('#status-bar-meta');
+    statusBarMeta.setAttribute('content', color);
   },
   getCustomPlayList: function() {
     const heoMusicPage = document.getElementById("heoMusic-page");
