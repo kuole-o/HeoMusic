@@ -144,6 +144,9 @@ function getDominantColor(imageSrc) {
 
       if (dominantColor) {
         const color = `rgb(${dominantColor})`;
+        if (getBrightness(color) > 165) {
+          color = 'rgb(165,165,165)'
+        };
         resolve(color);
       } else {
         reject(new Error("无法计算主题色。"));
@@ -154,6 +157,19 @@ function getDominantColor(imageSrc) {
       reject(new Error("加载图像失败。"));
     };
   });
+}
+
+// 判断颜色明暗
+// 165 是中间值，大于165，是亮色，否则是暗色
+function getBrightness(rgbColor) {
+  // 将 RGB 颜色字符串转换成数组
+  var rgb = rgbColor.replace(/[^\d,]/g, '').split(',');
+
+  // 计算亮度
+  var brightness = Math.round(((parseInt(rgb[0]) * 299) +
+    (parseInt(rgb[1]) * 587) +
+    (parseInt(rgb[2]) * 114)) / 1000);
+  return brightness;
 }
 
 //空格控制音乐
