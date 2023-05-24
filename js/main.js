@@ -143,8 +143,8 @@ function getDominantColor(imageSrc) {
       }
 
       if (dominantColor) {
-        const color = `rgb(${dominantColor})`;
-        if (getBrightness(color) > 165) {
+        var color = `rgb(${dominantColor})`;
+        if (getBrightness(color) > 210) {
           color = 'rgb(165,165,165)'
         };
         resolve(color);
