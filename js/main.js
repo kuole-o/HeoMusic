@@ -19,9 +19,9 @@ var heo = {
       img.onload = function() {
         heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
         
-        // 转发获取图片资源，解决跨域问题
         const imgUrl = img.src;  // 图片 URL
-
+        
+        // 转发获取图片资源，解决跨域问题
         // const proxyUrl = "https://api.guole.fun/image-proxy?url=";  // 代理服务器的 URL
         // getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
         
