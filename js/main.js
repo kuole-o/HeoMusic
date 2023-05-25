@@ -117,7 +117,7 @@ function getDominantColor(imageSrc) {
       context.drawImage(img, 0, 0);
 
       // 添加背景色和模糊度的效果
-      context.fillStyle = "rgba(0, 0, 0, 0.4)";
+      context.fillStyle = "rgba(0, 0, 0, 0.55)";
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.filter = "blur(200px)";
       context.drawImage(canvas, 0, 0);
