@@ -27,7 +27,7 @@ var heo = {
         
         getDominantColor(imgUrl)
           .then((color) => {
-            console.log("当前提取到的歌曲封面主题色为:", color);
+            //console.log("当前提取到的歌曲封面主题色为:", color);
             heo.setBodyBackgroundColor(color);
           })
           .catch((error) => {
@@ -59,7 +59,7 @@ var heo = {
     let body = document.body;
     body.style.background = color;
     // 设置 iOS 状态栏颜色
-    console.log('设置状态栏颜色：' + color)
+    // console.log('设置状态栏颜色：' + color)
     let statusBarMeta = document.querySelector('#status-bar-meta');
     statusBarMeta.setAttribute('content', color);
   },
@@ -107,7 +107,7 @@ function getDominantColor(imageSrc) {
     img.crossOrigin = "Anonymous";
     img.src = imageSrc;
 
-    img.onload = function () {
+    img.onload = function() {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
       canvas.width = img.width;
@@ -116,8 +116,14 @@ function getDominantColor(imageSrc) {
       // 绘制图像到画布
       context.drawImage(img, 0, 0);
 
+      // 添加背景色和模糊度的效果
+      context.fillStyle = "rgba(0, 0, 0, 0.4)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.filter = "blur(200px)";
+      context.drawImage(canvas, 0, 0);
+
       // 获取图像像素数据
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height / 3).data;
 
       // 统计像素颜色值
       const colorMap = {};
@@ -143,33 +149,17 @@ function getDominantColor(imageSrc) {
       }
 
       if (dominantColor) {
-        var color = `rgb(${dominantColor})`;
-        if (getBrightness(color) > 210) {
-          color = 'rgb(165,165,165)'
-        };
+        let color = `rgb(${dominantColor})`; 
         resolve(color);
       } else {
         reject(new Error("无法计算主题色。"));
       }
     };
 
-    img.onerror = function () {
+    img.onerror = function() {
       reject(new Error("加载图像失败。"));
     };
   });
-}
-
-// 判断颜色明暗
-// 165 是中间值，大于165，是亮色，否则是暗色
-function getBrightness(rgbColor) {
-  // 将 RGB 颜色字符串转换成数组
-  var rgb = rgbColor.replace(/[^\d,]/g, '').split(',');
-
-  // 计算亮度
-  var brightness = Math.round(((parseInt(rgb[0]) * 299) +
-    (parseInt(rgb[1]) * 587) +
-    (parseInt(rgb[2]) * 114)) / 1000);
-  return brightness;
 }
 
 //空格控制音乐
