@@ -26,6 +26,8 @@
   --heo-snackbar-time: 5s;
 }
 
+.app-refresh{position:fixed;top:-24px;left:0;right:0;z-index:99999;padding:0 20px;font-size:15px;height:24px;transition:all .3s ease}.app-refresh-wrap{display:flex;color:#fff;height:100%;align-items:center;justify-content:center}.app-refresh-wrap a{color:#fff;text-decoration:underline;cursor:pointer}
+
 #page {
   border: 0;
   box-shadow: none !important;
