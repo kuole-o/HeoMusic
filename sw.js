@@ -13,9 +13,6 @@ workbox.core.clientsClaim();
 // 清空过期缓存
 workbox.precaching.cleanupOutdatedCaches();
 
-// 设置缓存空间限制，缓存大小限制为 300MB
-workbox.core.setCacheSizeLimits(300 * 1024 * 1024);
-
 // 缓存资源
 workbox.routing.registerRoute(
     /\.(?:png|jpg|jpeg|gif|bmp|webp|svg|ico|mp3|lrc|m4a)$/,
