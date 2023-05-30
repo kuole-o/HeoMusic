@@ -1,4 +1,4 @@
-const workboxVersion = '6.5.4';
+const workboxVersion = '6.6.0';
 importScripts(`https://storage.googleapis.com/workbox-cdn/releases/${workboxVersion}/workbox-sw.js`);
 
 const CACHE_PREFIX = "GMusic";
@@ -13,7 +13,7 @@ workbox.core.clientsClaim();
 // 清空过期缓存
 workbox.precaching.cleanupOutdatedCaches();
 
-// 设置缓存空间限制
+// 设置缓存空间限制，缓存大小限制为 300MB
 workbox.core.setCacheSizeLimits(300 * 1024 * 1024);
 
 // 缓存资源
