@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music - 听我想听</title>
-  <link rel="stylesheet" type="text/css" href="./css/APlayer.min.css">
+  <link rel="stylesheet" type="text/css" href="./css/APlayer.css">
   <link rel="stylesheet" type="text/css" href="./main.css">
   <link rel="icon" type="image/x-icon" href="./img/icon.ico">
   <link rel="apple-touch-icon" href="./img/icon.png">
@@ -85,15 +85,6 @@
     media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
   <meta name="description" content="一个简单好用的音乐播放器。">
   <link rel="manifest" href="/manifest.json">
-  <script>
-    var _hmt = _hmt || [];
-    (function () {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?aec15e7bceb058eeaf389b64aab64aad";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
 </head>
 
 <body>
@@ -106,9 +97,25 @@
       <a href="javascript:void(0)" onclick="location.reload()">点击刷新</a>
     </div>
     <script>
-      var userId = "312821716";// 6964269984
-      var userServer = "netease";
+      var userId = "312821716"; //8668419170
+      var userServer = "netease"; //tencent
       var userType = "playlist";
+      // var localMusic = [{
+      //     name: '重生之我在异乡为异客',
+      //     artist: '王睿卓',
+      //     url: '/music/重生之我在异乡为异客.mp3',
+      //     cover: '/music/重生之我在异乡为异客.png',
+      //     lrc: '/music/重生之我在异乡为异客.lrc'
+      // },
+      // {
+      //     name: '落',
+      //     artist: '唐伯虎',
+      //     url: '/music/落.mp3',
+      //     cover: '/music/落.png',
+      //     lrc: '/music/落.lrc'
+      // }
+      // ];
+      // var remoteMusic = "./musiclist.json"
 
       //注册pwa
       function showNotification() {
@@ -143,7 +150,6 @@
           }));
     </script>
     <script src="./js/APlayer.min.js"></script>
-    <script src="./js/Meting2.min.js"></script>
     <script src="./js/snackbar.min.js"></script>
     <script async data-pjax src="./js/main.js"></script>
 </body>

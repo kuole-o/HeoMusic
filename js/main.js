@@ -1,4 +1,48 @@
-console.log("\n %c HeoMusic 开源静态音乐播放器 v1.5 %c https://github.com/zhheo/HeoMusic \n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;")
+console.log("\n %c HeoMusic 开源静态音乐播放器 %c https://github.com/zhheo/HeoMusic \n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;")
+var local = false;
+
+if (typeof userId === 'undefined') {
+  var userId = "312821716"; // 替换为实际的默认值
+}
+if (typeof userServer === 'undefined') {
+  var userServer = "netease"; // 替换为实际的默认值
+}
+if (typeof userType === 'undefined') {
+  var userType = "playlist"; // 替换为实际的默认值
+}
+
+if (typeof remoteMusic !== 'undefined' && remoteMusic) {
+  fetch(remoteMusic)
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        localMusic = data;
+      }
+      loadMusicScript();
+    })
+    .catch(error => {
+      console.error('Error fetching remoteMusic:', error);
+      loadMusicScript();
+    });
+} else {
+  loadMusicScript();
+}
+
+function loadMusicScript() {
+  if (typeof localMusic === 'undefined' || !Array.isArray(localMusic) || localMusic.length === 0) {
+    // 如果 localMusic 为空数组或未定义，加载 Meting2.min.js
+    var script = document.createElement('script');
+    script.src = './js/Meting.js';
+    document.body.appendChild(script);
+  } else {
+    // 否则加载 localEngine.js
+    var script = document.createElement('script');
+    script.src = './js/localEngine.js';
+    document.body.appendChild(script);
+    local = true;
+  }
+}
+
 var volume = 0.8;
 
 // 获取地址栏参数
@@ -8,31 +52,15 @@ const params = new URLSearchParams(window.location.search);
 var heo = {
   // 音乐节目切换背景
   changeMusicBg: function (isChangeBg = true) {
-    const heoMusicBg = document.getElementById("music_bg");
+    const heoMusicBg = document.getElementById("music_bg")
 
     if (isChangeBg) {
       // player loadeddata 会进入此处
       const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
-      const img = new Image();
+      var img = new Image();
       img.src = extractValue(musiccover.style.backgroundImage);
-      img.crossOrigin = "anonymous";
       img.onload = function() {
         heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
-        
-        const imgUrl = img.src;  // 图片 URL
-        
-        // 转发获取图片资源，解决跨域问题
-        // const proxyUrl = "https://api.guole.fun/image-proxy?url=";  // 代理服务器的 URL
-        // getDominantColor(proxyUrl + encodeURIComponent(imgUrl))
-        
-        getDominantColor(imgUrl)
-          .then((color) => {
-            //console.log("当前提取到的歌曲封面主题色为:", color);
-            heo.setBodyBackgroundColor(color);
-          })
-          .catch((error) => {
-            console.error("错误:", error);
-          });
       };
     } else {
       // 第一次进入，绑定事件，改背景
@@ -40,45 +68,139 @@ var heo = {
         const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
         // 确保player加载完成
         if (musiccover) {
-          clearInterval(timer);
+          clearInterval(timer)
           //初始化音量
-          document.querySelector('meting-js').aplayer.volume(0.8,true);
+          if (local) {
+            ap.volume(0.8, true);
+          }else {
+            document.querySelector('meting-js').aplayer.volume(0.8,true);
+          }
+
           // 绑定事件
           heo.addEventListenerChangeMusicBg();
+          // 添加歌词点击事件
+          heo.addLyricClickEvent();
         }
-      }, 100);
+      }, 100)
     }
   },
   addEventListenerChangeMusicBg: function () {
     const heoMusicPage = document.getElementById("heoMusic-page");
-    heoMusicPage.querySelector("meting-js").aplayer.on('loadeddata', function () {
-      heo.changeMusicBg();
+    if (local) {
+      ap.on('loadeddata', function () {
+        heo.changeMusicBg();
     });
+    }else {
+      heoMusicPage.querySelector("meting-js").aplayer.on('loadeddata', function () {
+        heo.changeMusicBg();
+        // console.info('player loadeddata');
+      });
+    }
   },
-  setBodyBackgroundColor: function (color) {
-    let body = document.body;
-    body.style.background = color;
-    // 设置 iOS 状态栏颜色
-    // console.log('设置状态栏颜色：' + color)
-    let statusBarMeta = document.querySelector('#status-bar-meta');
-    statusBarMeta.setAttribute('content', color);
+
+  scrollLyric: function() {
+    const lrcContent = document.querySelector('.aplayer-lrc');
+    const currentLyric = document.querySelector('.aplayer-lrc-current');
+    
+    if (lrcContent && currentLyric) {
+      let startScrollTop = lrcContent.scrollTop;
+      let targetScrollTop = currentLyric.offsetTop - (window.innerHeight - 150 ) * 0.3; // 目标位置在30%的dvh位置
+      let distance = targetScrollTop - startScrollTop;
+      let duration = 600;
+      let startTime = null;
+
+      function cubicBezier(t) {
+        return 3 * (1 - t) * (1 - t) * t * 0.95 + 3 * (1 - t) * t * t * 0.99 + t * t * t;
+      }
+
+      function animateScroll(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        let timeElapsed = currentTime - startTime;
+        let progress = Math.min(timeElapsed / duration, 1);
+        let easeProgress = cubicBezier(progress);
+        lrcContent.scrollTop = startScrollTop + (distance * easeProgress);
+        if (timeElapsed < duration) {
+          requestAnimationFrame(animateScroll);
+        }
+      }
+
+      requestAnimationFrame(animateScroll);
+    }
   },
+
   getCustomPlayList: function() {
     const heoMusicPage = document.getElementById("heoMusic-page");
     const playlistType = params.get("type") || "playlist";
     
     if (params.get("id") && params.get("server")) {
-      console.log("获取到自定义内容");
-      var id = params.get("id");
-      var server = params.get("server");
+      console.log("获取到自定义内容")
+      var id = params.get("id")
+      var server = params.get("server")
       heoMusicPage.innerHTML = `<meting-js id="${id}" server="${server}" type="${playlistType}" mutex="true" preload="auto" order="random"></meting-js>`;
     } else {
-      console.log("无自定义内容");
+      console.log("无自定义内容")
       heoMusicPage.innerHTML = `<meting-js id="${userId}" server="${userServer}" type="${userType}" mutex="true" preload="auto" order="random"></meting-js>`;
     }
     heo.changeMusicBg(false);
-  }
-};
+  },
+  bindEvents: function () {
+    var e = this;
+    // 添加歌词点击��件
+    if (this.lrc) {
+        this.template.lrc.addEventListener('click', function (event) {
+            // 确保点击的是歌词 p 元素
+            var target = event.target;
+            if (target.tagName.toLowerCase() === 'p') {
+                // 获取所有歌词元素
+                var lyrics = e.template.lrc.getElementsByTagName('p');
+                // 找到被点击歌词的索引
+                for (var i = 0; i < lyrics.length; i++) {
+                    if (lyrics[i] === target) {
+                        // 获取对应时间并跳转
+                        if (e.lrc.current[i]) {
+                            var time = e.lrc.current[i][0];
+                            e.seek(time);
+                            if (e.paused) {
+                                e.play();
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+    }
+  },
+  // 添加新方法处理歌词点击
+  addLyricClickEvent: function() {
+    const lrcContent = document.querySelector('.aplayer-lrc-contents');
+    
+    if (lrcContent) {
+        lrcContent.addEventListener('click', function(event) {
+            if (event.target.tagName.toLowerCase() === 'p') {
+                const lyrics = lrcContent.getElementsByTagName('p');
+                for (let i = 0; i < lyrics.length; i++) {
+                    if (lyrics[i] === event.target) {
+                        // 获取当前播放器实例
+                        const player = local ? ap : document.querySelector('meting-js').aplayer;
+                        // 使用播放器内部的歌词数据
+                        if (player.lrc.current[i]) {
+                            const time = player.lrc.current[i][0];
+                            player.seek(time);
+                            // 如果当前是暂停状态,则恢复播放
+                            if (player.paused) {
+                                player.play();
+                            }
+                        }
+                        event.stopPropagation(); // 阻止事件冒泡
+                        break;
+                    }
+                }
+            }
+        });
+    }
+  },
+}
 
 // 调用
 heo.getCustomPlayList();
@@ -100,97 +222,60 @@ function extractValue(input) {
   return match[1];
 }
 
-//歌曲封面获取主题色
-function getDominantColor(imageSrc) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = imageSrc;
-
-    img.onload = function() {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      // 绘制图像到画布
-      context.drawImage(img, 0, 0);
-
-      // 添加背景色和模糊度的效果
-      context.fillStyle = "rgba(0, 0, 0, 0.55)";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.filter = "blur(200px)";
-      context.drawImage(canvas, 0, 0);
-
-      // 获取图像像素数据
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height / 3).data;
-
-      // 统计像素颜色值
-      const colorMap = {};
-      let maxCount = 0;
-      let dominantColor = null;
-
-      for (let i = 0; i < imageData.length; i += 4) {
-        const r = imageData[i];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
-        const rgb = `${r},${g},${b}`;
-
-        if (!colorMap[rgb]) {
-          colorMap[rgb] = 0;
-        }
-
-        colorMap[rgb] += 1;
-
-        if (colorMap[rgb] > maxCount) {
-          maxCount = colorMap[rgb];
-          dominantColor = rgb;
-        }
-      }
-
-      if (dominantColor) {
-        let color = `rgb(${dominantColor})`; 
-        resolve(color);
-      } else {
-        reject(new Error("无法计算主题色。"));
-      }
-    };
-
-    img.onerror = function() {
-      reject(new Error("加载图像失败。"));
-    };
-  });
-}
-
 //空格控制音乐
 document.addEventListener("keydown", function(event) {
   //暂停开启音乐
   if (event.code === "Space") {
     event.preventDefault();
-    document.querySelector('meting-js').aplayer.toggle();
+    if (local) {
+      ap.toggle();
+    }else {
+      document.querySelector('meting-js').aplayer.toggle();
+    }
+
   };
   //切换下一曲
   if (event.keyCode === 39) {
     event.preventDefault();
-    document.querySelector('meting-js').aplayer.skipForward();
+    if (local) {
+      ap.skipForward();
+    }else {
+      document.querySelector('meting-js').aplayer.skipForward();
+    }
+
   };
   //切换上一曲
   if (event.keyCode === 37) {
     event.preventDefault();
-    document.querySelector('meting-js').aplayer.skipBack();
+    if (local) {
+ap.skipBack();
+    }else {
+      document.querySelector('meting-js').aplayer.skipBack();
+    }
+
   }
   //增加音量
   if (event.keyCode === 38) {
     if (volume <= 1) {
       volume += 0.1;
-      document.querySelector('meting-js').aplayer.volume(volume,true);
+      if (local) {
+        ap.volume(volume,true);
+      }else {
+        document.querySelector('meting-js').aplayer.volume(volume,true);
+      }
+
     }
   }
   //减小音量
   if (event.keyCode === 40) {
     if (volume >= 0) {
       volume += -0.1;
-      document.querySelector('meting-js').aplayer.volume(volume,true);
+      if (local) {
+        ap.volume(volume,true);
+      }else {
+        document.querySelector('meting-js').aplayer.volume(volume,true);
+      }
+      
     }
   }
 });
