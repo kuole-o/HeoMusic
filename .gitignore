@@ -1,4 +1,5 @@
 
 .DS_Store
 /music/
-musiclist.json
+music_list.json
+node_modules
