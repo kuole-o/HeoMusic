@@ -13,5 +13,5 @@ app.use(express.static(path.join(__dirname, '.')));
 
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });

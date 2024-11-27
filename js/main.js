@@ -59,12 +59,12 @@ var heo = {
       const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
       var img = new Image();
       img.src = extractValue(musiccover.style.backgroundImage);
-      img.onload = function() {
+      img.onload = function () {
         heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
       };
     } else {
       // 第一次进入，绑定事件，改背景
-      let timer = setInterval(()=>{
+      let timer = setInterval(() => {
         const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
         // 确保player加载完成
         if (musiccover) {
@@ -72,8 +72,8 @@ var heo = {
           //初始化音量
           if (local) {
             ap.volume(0.8, true);
-          }else {
-            document.querySelector('meting-js').aplayer.volume(0.8,true);
+          } else {
+            document.querySelector('meting-js').aplayer.volume(0.8, true);
           }
 
           // 绑定事件
@@ -89,8 +89,8 @@ var heo = {
     if (local) {
       ap.on('loadeddata', function () {
         heo.changeMusicBg();
-    });
-    }else {
+      });
+    } else {
       heoMusicPage.querySelector("meting-js").aplayer.on('loadeddata', function () {
         heo.changeMusicBg();
         // console.info('player loadeddata');
@@ -98,26 +98,26 @@ var heo = {
     }
   },
 
-  scrollLyric: function() {
+  scrollLyric: function () {
     const lrcContent = document.querySelector('.aplayer-lrc');
     const currentLyric = document.querySelector('.aplayer-lrc-current');
-    
+
     if (lrcContent && currentLyric) {
       let startScrollTop = lrcContent.scrollTop;
-      let targetScrollTop = currentLyric.offsetTop - (window.innerHeight - 150 ) * 0.3; // 目标位置在30%的dvh位置
+      let targetScrollTop = currentLyric.offsetTop - (window.innerHeight - 150) * 0.3; // 目标位置在30%的dvh位置
       let distance = targetScrollTop - startScrollTop;
-      let duration = 600;
+      let duration = 600; // 缩短动画时间以提高流畅度
       let startTime = null;
 
-      function cubicBezier(t) {
-        return 3 * (1 - t) * (1 - t) * t * 0.95 + 3 * (1 - t) * t * t * 0.99 + t * t * t;
+      function easeOutQuad(t) {
+        return t * (2 - t);
       }
 
       function animateScroll(currentTime) {
         if (startTime === null) startTime = currentTime;
         let timeElapsed = currentTime - startTime;
         let progress = Math.min(timeElapsed / duration, 1);
-        let easeProgress = cubicBezier(progress);
+        let easeProgress = easeOutQuad(progress);
         lrcContent.scrollTop = startScrollTop + (distance * easeProgress);
         if (timeElapsed < duration) {
           requestAnimationFrame(animateScroll);
@@ -128,10 +128,10 @@ var heo = {
     }
   },
 
-  getCustomPlayList: function() {
+  getCustomPlayList: function () {
     const heoMusicPage = document.getElementById("heoMusic-page");
     const playlistType = params.get("type") || "playlist";
-    
+
     if (params.get("id") && params.get("server")) {
       console.log("获取到自定义内容")
       var id = params.get("id")
@@ -147,59 +147,129 @@ var heo = {
     var e = this;
     // 添加歌词点击��件
     if (this.lrc) {
-        this.template.lrc.addEventListener('click', function (event) {
-            // 确保点击的是歌词 p 元素
-            var target = event.target;
-            if (target.tagName.toLowerCase() === 'p') {
-                // 获取所有歌词元素
-                var lyrics = e.template.lrc.getElementsByTagName('p');
-                // 找到被点击歌词的索引
-                for (var i = 0; i < lyrics.length; i++) {
-                    if (lyrics[i] === target) {
-                        // 获取对应时间并跳转
-                        if (e.lrc.current[i]) {
-                            var time = e.lrc.current[i][0];
-                            e.seek(time);
-                            if (e.paused) {
-                                e.play();
-                            }
-                        }
-                        break;
-                    }
+      this.template.lrc.addEventListener('click', function (event) {
+        // 确保点击的是歌词 p 元素
+        var target = event.target;
+        if (target.tagName.toLowerCase() === 'p') {
+          // 获取所有歌词元素
+          var lyrics = e.template.lrc.getElementsByTagName('p');
+          // 找到被点击歌词的索引
+          for (var i = 0; i < lyrics.length; i++) {
+            if (lyrics[i] === target) {
+              // 获取对应时间并跳转
+              if (e.lrc.current[i]) {
+                var time = e.lrc.current[i][0];
+                e.seek(time);
+                if (e.paused) {
+                  e.play();
                 }
+              }
+              break;
             }
-        });
+          }
+        }
+      });
     }
   },
   // 添加新方法处理歌词点击
-  addLyricClickEvent: function() {
+  addLyricClickEvent: function () {
     const lrcContent = document.querySelector('.aplayer-lrc-contents');
-    
+
     if (lrcContent) {
-        lrcContent.addEventListener('click', function(event) {
-            if (event.target.tagName.toLowerCase() === 'p') {
-                const lyrics = lrcContent.getElementsByTagName('p');
-                for (let i = 0; i < lyrics.length; i++) {
-                    if (lyrics[i] === event.target) {
-                        // 获取当前播放器实例
-                        const player = local ? ap : document.querySelector('meting-js').aplayer;
-                        // 使用播放器内部的歌词数据
-                        if (player.lrc.current[i]) {
-                            const time = player.lrc.current[i][0];
-                            player.seek(time);
-                            // 如果当前是暂停状态,则恢复播放
-                            if (player.paused) {
-                                player.play();
-                            }
-                        }
-                        event.stopPropagation(); // 阻止事件冒泡
-                        break;
-                    }
+      lrcContent.addEventListener('click', function (event) {
+        if (event.target.tagName.toLowerCase() === 'p') {
+          const lyrics = lrcContent.getElementsByTagName('p');
+          for (let i = 0; i < lyrics.length; i++) {
+            if (lyrics[i] === event.target) {
+              // 获取当前播放器实例
+              const player = local ? ap : document.querySelector('meting-js').aplayer;
+              // 使用播放器内部的歌词数据
+              if (player.lrc.current[i]) {
+                const time = player.lrc.current[i][0];
+                player.seek(time);
+                // 如果当前是暂停状态,则恢复播放
+                if (player.paused) {
+                  player.play();
                 }
+              }
+              event.stopPropagation(); // 阻止事件冒泡
+              break;
             }
-        });
+          }
+        }
+      });
     }
   },
+  // 响应 MediaSession 标准媒体交互
+  setupMediaSessionHandlers: function (aplayer) {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        aplayer.play();
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        aplayer.pause();
+      });
+
+      navigator.mediaSession.setActionHandler('seekbackward', () => {
+        aplayer.seek(aplayer.audio.currentTime -= 10);
+      });
+
+      navigator.mediaSession.setActionHandler('seekforward', () => {
+        aplayer.seek(aplayer.audio.currentTime += 10);
+      });
+
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        aplayer.skipBack();
+      });
+
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        aplayer.skipForward();
+      });
+
+      // 更新 Media Session 元数据
+      aplayer.on('loadeddata', () => {
+        const audio = aplayer.list.audios[aplayer.list.index]
+        console.log("播放歌曲名称：", audio.name);
+        console.log("播放歌曲歌手：", audio.artist);
+
+        const coverUrl = audio.cover || './img/icon.png';
+        console.log("播放歌曲封面：", coverUrl);
+
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: audio.name,
+            artist: audio.artist,
+            album: audio.album,
+            artwork: [
+              { src: coverUrl, sizes: '96x96', type: 'image/jpeg' },
+              { src: coverUrl, sizes: '128x128', type: 'image/jpeg' },
+              { src: coverUrl, sizes: '192x192', type: 'image/jpeg' },
+              { src: coverUrl, sizes: '256x256', type: 'image/jpeg' },
+              { src: coverUrl, sizes: '384x384', type: 'image/jpeg' },
+              { src: coverUrl, sizes: '512x512', type: 'image/jpeg' }
+            ]
+          });
+        } else {
+          console.log('当前浏览器不支持 Media Session API');
+          document.title = `${audio.name} - ${audio.artist}`;
+        }
+      });
+
+      // 更新播放状态
+      aplayer.on('play', () => {
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'playing';
+        }
+      });
+
+      aplayer.on('pause', () => {
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'paused';
+        }
+      });
+    }
+  }
 }
 
 // 调用
@@ -223,13 +293,13 @@ function extractValue(input) {
 }
 
 //空格控制音乐
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
   //暂停开启音乐
   if (event.code === "Space") {
     event.preventDefault();
     if (local) {
       ap.toggle();
-    }else {
+    } else {
       document.querySelector('meting-js').aplayer.toggle();
     }
 
@@ -239,7 +309,7 @@ document.addEventListener("keydown", function(event) {
     event.preventDefault();
     if (local) {
       ap.skipForward();
-    }else {
+    } else {
       document.querySelector('meting-js').aplayer.skipForward();
     }
 
@@ -248,8 +318,8 @@ document.addEventListener("keydown", function(event) {
   if (event.keyCode === 37) {
     event.preventDefault();
     if (local) {
-ap.skipBack();
-    }else {
+      ap.skipBack();
+    } else {
       document.querySelector('meting-js').aplayer.skipBack();
     }
 
@@ -259,9 +329,9 @@ ap.skipBack();
     if (volume <= 1) {
       volume += 0.1;
       if (local) {
-        ap.volume(volume,true);
-      }else {
-        document.querySelector('meting-js').aplayer.volume(volume,true);
+        ap.volume(volume, true);
+      } else {
+        document.querySelector('meting-js').aplayer.volume(volume, true);
       }
 
     }
@@ -271,11 +341,11 @@ ap.skipBack();
     if (volume >= 0) {
       volume += -0.1;
       if (local) {
-        ap.volume(volume,true);
-      }else {
-        document.querySelector('meting-js').aplayer.volume(volume,true);
+        ap.volume(volume, true);
+      } else {
+        document.querySelector('meting-js').aplayer.volume(volume, true);
       }
-      
+
     }
   }
 });
