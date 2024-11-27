@@ -10,7 +10,7 @@ fi
 git commit -m "$msg"
 
 # Push source and build repos.
-git push github main
+git push github main:main
 
 #./deplay.bat
 
