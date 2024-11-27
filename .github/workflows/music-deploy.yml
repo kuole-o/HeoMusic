@@ -16,7 +16,7 @@ jobs:
     - name: Delete irrelevant files
       run: |
         rm -rf .github
-        rm -rf update.sh LICENSE READMD.md
+        rm -rf update.sh LICENSE READMD.md package-lock.json server.js node_modules
 
     - name: Install tencent cloud coscmd
       run: |
