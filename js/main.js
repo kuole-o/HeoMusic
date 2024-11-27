@@ -117,7 +117,7 @@ var heo = {
         if (startTime === null) startTime = currentTime;
         let timeElapsed = currentTime - startTime;
         let progress = Math.min(timeElapsed / duration, 1);
-        let easeProgress = easeOutQuad(progress);
+        let easeProgress = window.innerWidth < 768 ? progress : easeOutQuad(progress);
         lrcContent.scrollTop = startScrollTop + (distance * easeProgress);
         if (timeElapsed < duration) {
           requestAnimationFrame(animateScroll);
@@ -211,14 +211,11 @@ var heo = {
         aplayer.pause();
       });
 
-      navigator.mediaSession.setActionHandler('seekbackward', () => {
-        aplayer.seek(aplayer.audio.currentTime -= 10);
-      });
+      // 移除快进快退按钮
+      navigator.mediaSession.setActionHandler('seekbackward', null);
+      navigator.mediaSession.setActionHandler('seekforward', null);
 
-      navigator.mediaSession.setActionHandler('seekforward', () => {
-        aplayer.seek(aplayer.audio.currentTime += 10);
-      });
-
+      // 设置上一曲下一曲按钮
       navigator.mediaSession.setActionHandler('previoustrack', () => {
         aplayer.skipBack();
       });
