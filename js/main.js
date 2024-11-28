@@ -154,7 +154,7 @@ var heo = {
   },
   setMediaMetadata: function (aplayerObj, isSongPlaying) {
     const audio = aplayerObj.list.audios[aplayerObj.list.index]
-    const coverUrl = audio.cover || './img/icon.webp';
+    const coverUrl = audio.cover || './img/icon.png';
     const currentLrcContent = document.getElementById("heoMusic-page").querySelector(".aplayer-lrc-current").textContent;
     let songName, songArtist;
 
