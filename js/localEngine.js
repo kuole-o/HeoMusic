@@ -17,7 +17,8 @@ function encodeNonAscii(str) {
 const ap = new APlayer({
   container: document.getElementById('heoMusic-page'),
   lrcType: 3,
-  audio: encodedLocalMusic
+  audio: encodedLocalMusic,
+  order: 'random',
 });
 
 heo.setupMediaSessionHandlers(ap);

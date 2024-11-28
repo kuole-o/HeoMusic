@@ -50,54 +50,6 @@ var volume = 0.8;
 const params = new URLSearchParams(window.location.search);
 
 var heo = {
-  // 音乐节目切换背景
-  changeMusicBg: function (isChangeBg = true) {
-    const heoMusicBg = document.getElementById("music_bg")
-
-    if (isChangeBg) {
-      // player loadeddata 会进入此处
-      const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
-      var img = new Image();
-      img.src = extractValue(musiccover.style.backgroundImage);
-      img.onload = function () {
-        heoMusicBg.style.backgroundImage = musiccover.style.backgroundImage;
-      };
-    } else {
-      // 第一次进入，绑定事件，改背景
-      let timer = setInterval(() => {
-        const musiccover = document.querySelector("#heoMusic-page .aplayer-pic");
-        // 确保player加载完成
-        if (musiccover) {
-          clearInterval(timer)
-          //初始化音量
-          if (local) {
-            ap.volume(0.8, true);
-          } else {
-            document.querySelector('meting-js').aplayer.volume(0.8, true);
-          }
-
-          // 绑定事件
-          heo.addEventListenerChangeMusicBg();
-          // 添加歌词点击事件
-          heo.addLyricClickEvent();
-        }
-      }, 100)
-    }
-  },
-  addEventListenerChangeMusicBg: function () {
-    const heoMusicPage = document.getElementById("heoMusic-page");
-    if (local) {
-      ap.on('loadeddata', function () {
-        heo.changeMusicBg();
-      });
-    } else {
-      heoMusicPage.querySelector("meting-js").aplayer.on('loadeddata', function () {
-        heo.changeMusicBg();
-        // console.info('player loadeddata');
-      });
-    }
-  },
-
   scrollLyric: function () {
     const lrcContent = document.querySelector('.aplayer-lrc');
     const currentLyric = document.querySelector('.aplayer-lrc-current');
@@ -141,11 +93,11 @@ var heo = {
       console.log("无自定义内容")
       heoMusicPage.innerHTML = `<meting-js id="${userId}" server="${userServer}" type="${userType}" mutex="true" preload="auto" order="random"></meting-js>`;
     }
-    heo.changeMusicBg(false);
   },
+
   bindEvents: function () {
     var e = this;
-    // 添加歌词点击��件
+    // 添加歌词点击事件
     if (this.lrc) {
       this.template.lrc.addEventListener('click', function (event) {
         // 确保点击的是歌词 p 元素
@@ -202,7 +154,7 @@ var heo = {
   },
   setMediaMetadata: function (aplayerObj, isSongPlaying) {
     const audio = aplayerObj.list.audios[aplayerObj.list.index]
-    const coverUrl = audio.cover || './img/icon.png';
+    const coverUrl = audio.cover || './img/icon.webp';
     const currentLrcContent = document.getElementById("heoMusic-page").querySelector(".aplayer-lrc-current").textContent;
     let songName, songArtist;
 
@@ -279,27 +231,29 @@ var heo = {
         heo.setMediaMetadata(aplayer, true);
       });
     }
+  },
+  updateThemeColorWithImage(img) {
+    if (local) {
+      const updateThemeColor = (colorThief) => {
+        const dominantColor = colorThief.getColor(img);
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', `rgb(${dominantColor.join(',')})`);
+        }
+      };
+
+      if (typeof ColorThief === 'undefined') {
+        const script = document.createElement('script');
+        script.src = './js/color-thief.min.js';
+        script.onload = () => updateThemeColor(new ColorThief());
+        document.body.appendChild(script);
+      } else {
+        updateThemeColor(new ColorThief());
+      }
+    }
+
   }
-}
 
-// 调用
-heo.getCustomPlayList();
-
-
-// 改进vh
-const vh = window.innerHeight * 1;
-document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-window.addEventListener('resize', () => {
-  let vh = window.innerHeight * 1;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-});
-
-//获取图片url
-function extractValue(input) {
-  var valueRegex = /\("([^\s]+)"\)/g;
-  var match = valueRegex.exec(input);
-  return match[1];
 }
 
 //空格控制音乐
@@ -359,3 +313,6 @@ document.addEventListener("keydown", function (event) {
     }
   }
 });
+
+// 调用
+heo.getCustomPlayList();

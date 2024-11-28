@@ -1,6 +1,6 @@
 {
-    "name": "音乐",
-    "short_name": "音乐",
+    "name": "1701",
+    "short_name": "1701",
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
     "display": "fullscreen",
@@ -45,7 +45,7 @@
           "purpose": "any maskable"
         },
         {
-          "src": "./img/512.png",
+          "src": "./img/icon.png",
           "sizes": "512x512",
           "type": "image/png"
         }

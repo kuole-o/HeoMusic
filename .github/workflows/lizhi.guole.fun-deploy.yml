@@ -1,0 +1,41 @@
+name: lizhi.guole.fun build deploy
+
+on:
+  push:
+    branches:
+      - lizhi
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+        
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Delete irrelevant files
+      run: |
+        rm -rf .github
+        rm -rf update.sh LICENSE READMD.md package-lock.json server.js node_modules
+
+    - name: Install tencent cloud coscmd
+      run: |
+        sudo pip install coscmd
+
+    - name: Configuration tencent cloud coscmd
+      env:
+        SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID_LIZHI }}
+        SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY_LIZHI }}
+        BUCKET: ${{ secrets.COS_BUCKET_LIZHI }}
+        REGION: ${{ secrets.COS_REGION }}
+      run: |
+        coscmd config -a $SECRET_ID -s $SECRET_KEY -b $BUCKET -r $REGION
+
+    - name: upload tencent cloud COS
+      run: |
+        coscmd upload -rfs --delete ./ /
+
+    - name: Call API and log response
+      run: |
+        response=$(curl -X GET -H "token: ${{ secrets.API_TOKEN }}" ${{ secrets.CDN_CACHE_REFRESH_API }}?url=https://lizhi.guole.fun/*)
+        echo "$response"
