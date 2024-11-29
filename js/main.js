@@ -208,6 +208,15 @@ var heo = {
         aplayer.skipForward();
       });
 
+      // 响应进度条拖动
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (details.fastSeek && 'fastSeek' in aplayer.audio) {
+          aplayer.audio.fastSeek(details.seekTime);
+        } else {
+          aplayer.audio.currentTime = details.seekTime;
+        }
+      });
+
       // 更新 Media Session 元数据
       aplayer.on('loadeddata', () => {
         heo.setMediaMetadata(aplayer, false);
@@ -238,7 +247,11 @@ var heo = {
         const dominantColor = colorThief.getColor(img);
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-          metaThemeColor.setAttribute('content', `rgb(${dominantColor.join(',')})`);
+          // 叠加rgba(0,0,0,0.4)的效果
+          const r = Math.round(dominantColor[0] * 0.6); // 原色 * 0.6 实现叠加黑色透明度0.4的效果
+          const g = Math.round(dominantColor[1] * 0.6);
+          const b = Math.round(dominantColor[2] * 0.6);
+          metaThemeColor.setAttribute('content', `rgb(${r},${g},${b})`);
         }
       };
 
@@ -251,9 +264,28 @@ var heo = {
         updateThemeColor(new ColorThief());
       }
     }
+  },
 
-  }
+  // 检查是否移动端
+  isMobileDevice() {
+    if (window.innerWidth <= 768) {
+      return true
+    } else {
+      return false
+    }
+  },
 
+  // 处理播放列表展示or隐藏
+  handleResize() {
+    let aplayerList = document.getElementById('heoMusic-page').querySelector('.aplayer-list');
+    if (aplayerList) {
+        if (window.innerWidth <= 768 && !aplayerList.classList.contains('aplayer-list-hide')) {
+            aplayerList.classList.add('aplayer-list-hide');
+        } else if (window.innerWidth > 768 && aplayerList.classList.contains('aplayer-list-hide')) {
+            aplayerList.classList.remove('aplayer-list-hide');
+        }
+    }
+  },
 }
 
 //空格控制音乐
@@ -312,6 +344,13 @@ document.addEventListener("keydown", function (event) {
 
     }
   }
+});
+
+// 添加防抖处理
+let resizeTimeout;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(heo.handleResize, 100);
 });
 
 // 调用
