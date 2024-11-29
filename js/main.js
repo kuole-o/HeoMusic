@@ -208,6 +208,15 @@ var heo = {
         aplayer.skipForward();
       });
 
+      // 响应进度条拖动
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (details.fastSeek && 'fastSeek' in aplayer.audio) {
+            aplayer.audio.fastSeek(details.seekTime);
+        } else {
+            aplayer.audio.currentTime = details.seekTime;
+        }
+      });
+
       // 更新 Media Session 元数据
       aplayer.on('loadeddata', () => {
         heo.setMediaMetadata(aplayer, false);
@@ -238,7 +247,11 @@ var heo = {
         const dominantColor = colorThief.getColor(img);
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-          metaThemeColor.setAttribute('content', `rgb(${dominantColor.join(',')})`);
+            // 叠加rgba(0,0,0,0.4)的效果
+            const r = Math.round(dominantColor[0] * 0.6); // 原色 * 0.6 实现叠加黑色透明度0.4的效果
+            const g = Math.round(dominantColor[1] * 0.6);
+            const b = Math.round(dominantColor[2] * 0.6);
+            metaThemeColor.setAttribute('content', `rgb(${r},${g},${b})`);
         }
       };
 
@@ -251,9 +264,7 @@ var heo = {
         updateThemeColor(new ColorThief());
       }
     }
-
   }
-
 }
 
 //空格控制音乐
