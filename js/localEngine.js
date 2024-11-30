@@ -18,6 +18,7 @@ const ap = new APlayer({
   container: document.getElementById('heoMusic-page'),
   lrcType: 3,
   audio: encodedLocalMusic,
+  listFolded: window.innerWidth < 768 ? true : false,
   order: 'random',
 });
 
