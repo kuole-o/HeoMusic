@@ -134,7 +134,7 @@ var heo = {
           for (let i = 0; i < lyrics.length; i++) {
             if (lyrics[i] === event.target) {
               // 获取当前播放器实例
-              const player = local ? ap : document.querySelector('meting-js').aplayer;
+              const player = ap;
               // 使用播放器内部的歌词数据
               if (player.lrc.current[i]) {
                 const time = player.lrc.current[i][0];
@@ -211,9 +211,9 @@ var heo = {
       // 响应进度条拖动
       navigator.mediaSession.setActionHandler('seekto', (details) => {
         if (details.fastSeek && 'fastSeek' in aplayer.audio) {
-            aplayer.audio.fastSeek(details.seekTime);
+          aplayer.audio.fastSeek(details.seekTime);
         } else {
-            aplayer.audio.currentTime = details.seekTime;
+          aplayer.audio.currentTime = details.seekTime;
         }
       });
 
@@ -247,11 +247,11 @@ var heo = {
         const dominantColor = colorThief.getColor(img);
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-            // 叠加rgba(0,0,0,0.4)的效果
-            const r = Math.round(dominantColor[0] * 0.6); // 原色 * 0.6 实现叠加黑色透明度0.4的效果
-            const g = Math.round(dominantColor[1] * 0.6);
-            const b = Math.round(dominantColor[2] * 0.6);
-            metaThemeColor.setAttribute('content', `rgb(${r},${g},${b})`);
+          // 叠加rgba(0,0,0,0.4)的效果
+          const r = Math.round(dominantColor[0] * 0.6); // 原色 * 0.6 实现叠加黑色透明度0.4的效果
+          const g = Math.round(dominantColor[1] * 0.6);
+          const b = Math.round(dominantColor[2] * 0.6);
+          metaThemeColor.setAttribute('content', `rgb(${r},${g},${b})`);
         }
       };
 
@@ -272,42 +272,26 @@ document.addEventListener("keydown", function (event) {
   //暂停开启音乐
   if (event.code === "Space") {
     event.preventDefault();
-    if (local) {
-      ap.toggle();
-    } else {
-      document.querySelector('meting-js').aplayer.toggle();
-    }
+    ap.toggle();
 
   };
   //切换下一曲
   if (event.keyCode === 39) {
     event.preventDefault();
-    if (local) {
-      ap.skipForward();
-    } else {
-      document.querySelector('meting-js').aplayer.skipForward();
-    }
+    ap.skipForward();
 
   };
   //切换上一曲
   if (event.keyCode === 37) {
     event.preventDefault();
-    if (local) {
-      ap.skipBack();
-    } else {
-      document.querySelector('meting-js').aplayer.skipBack();
-    }
+    ap.skipBack();
 
   }
   //增加音量
   if (event.keyCode === 38) {
     if (volume <= 1) {
       volume += 0.1;
-      if (local) {
-        ap.volume(volume, true);
-      } else {
-        document.querySelector('meting-js').aplayer.volume(volume, true);
-      }
+      ap.volume(volume, true);
 
     }
   }
@@ -315,15 +299,32 @@ document.addEventListener("keydown", function (event) {
   if (event.keyCode === 40) {
     if (volume >= 0) {
       volume += -0.1;
-      if (local) {
-        ap.volume(volume, true);
-      } else {
-        document.querySelector('meting-js').aplayer.volume(volume, true);
-      }
+      ap.volume(volume, true);
 
     }
   }
 });
+
+// 防抖
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+// 监听窗口大小变化
+const handleResize = debounce(function() {
+  if (window.innerWidth > 768) {
+    ap.list.show();
+  } else {
+    ap.list.hide();
+  }
+}, 200); // 200毫秒的防抖时间
+
+window.addEventListener('resize', handleResize);
 
 // 调用
 heo.getCustomPlayList();
