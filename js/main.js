@@ -343,7 +343,7 @@ const handleResize = debounce(function () {
   } else {
     ap.list.hide();
   }
-}, 200); // 200毫秒的防抖时间
+}, 200);
 window.addEventListener('resize', handleResize);
 
 // 调用
