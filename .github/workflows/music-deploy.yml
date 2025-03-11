@@ -3,7 +3,7 @@ name: music.guole.fun build deploy
 on:
   push:
     branches:
-      - main
+      #- main  已调整为 vercel 部署，故无需此脚本部署至cos
       
 jobs:
   build:
