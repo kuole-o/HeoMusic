@@ -13,10 +13,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Delete irrelevant files
-      run: |
-        rm -rf update.sh update.md server.js READMD.md package.json package-lock.json LICENSE images.js node_modules .vscode .github .git .gitattributes .gitignore
-
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
@@ -35,6 +31,10 @@ jobs:
         REGION: ${{ secrets.COS_REGION }}
       run: |
         coscmd config -a $SECRET_ID -s $SECRET_KEY -b $BUCKET -r $REGION
+
+    - name: Delete irrelevant files
+      run: |
+        rm -rf update.sh update.md server.js READMD.md package.json package-lock.json LICENSE images.js node_modules .vscode .github .git .gitattributes .gitignore
 
     - name: upload tencent cloud COS
       run: |
