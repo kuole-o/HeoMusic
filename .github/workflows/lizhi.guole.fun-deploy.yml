@@ -15,8 +15,7 @@ jobs:
 
     - name: Delete irrelevant files
       run: |
-        rm -rf .github
-        rm -rf update.sh update.md server.js READMD.md package-lock.json LICENSE images.js node_modules .vscode .github
+        rm -rf update.sh update.md server.js READMD.md package.json package-lock.json LICENSE images.js node_modules .vscode .github .git .gitattributes .gitignore
 
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
@@ -26,7 +25,7 @@ jobs:
     - name: Install tencent cloud coscmd
       run: |
         python -m pip install --upgrade pip
-        sudo pip install coscmd
+        pip install coscmd
 
     - name: Configuration tencent cloud coscmd
       env:
