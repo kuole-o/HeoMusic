@@ -161,7 +161,7 @@ var heo = {
     if ('mediaSession' in navigator) {
       if (isSongPlaying && currentLrcContent) {
         songName = currentLrcContent;
-        songArtist = `${audio.artist}/${audio.name}`;
+        songArtist = `${audio.artist} / ${audio.name}`;
       } else {
         songName = audio.name;
         songArtist = audio.artist;
