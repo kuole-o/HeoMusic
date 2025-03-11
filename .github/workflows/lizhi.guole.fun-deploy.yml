@@ -18,8 +18,14 @@ jobs:
         rm -rf .github
         rm -rf update.sh update.md server.js READMD.md package-lock.json LICENSE images.js node_modules .vscode .github
 
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
     - name: Install tencent cloud coscmd
       run: |
+        python -m pip install --upgrade pip
         sudo pip install coscmd
 
     - name: Configuration tencent cloud coscmd
