@@ -42,6 +42,7 @@
   height: 90px;
   width: 90px
 }
+
 .aplayer.aplayer-withlrc .aplayer-lrc {
   display: block
 }
@@ -208,6 +209,7 @@
   margin: 0;
   display: inline-block;
 }
+
 .aplayer .aplayer-icon path {
   transition: all .2s ease-in-out
 }
