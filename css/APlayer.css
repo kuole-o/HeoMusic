@@ -42,6 +42,7 @@
   height: 90px;
   width: 90px
 }
+
 .aplayer.aplayer-withlrc .aplayer-lrc {
   display: block
 }
@@ -208,6 +209,7 @@
   margin: 0;
   display: inline-block;
 }
+
 .aplayer .aplayer-icon path {
   transition: all .2s ease-in-out
 }
@@ -478,7 +480,6 @@
   position: relative;
   height: 30px;
   text-align: center;
-  margin: -10px 0 7px
 }
 
 .aplayer .aplayer-lrc:before {
@@ -575,7 +576,7 @@
   cursor: pointer;
   transition: all .2s ease;
   overflow: hidden;
-  margin: 1px 0;
+  margin: 1px -4px 1px 8px;
 }
 
 .aplayer .aplayer-list ol li:first-child {
